@@ -1,0 +1,87 @@
+id: use_functions_with_chat_models
+name: Use Functions with Chat Models
+inputs:
+  chat_history:
+    type: list
+    default:
+    - inputs:
+        question: What is the weather like in Boston?
+      outputs:
+        answer: '{"forecast":["sunny","windy"],"location":"Boston","temperature":"72","unit":"fahrenheit"}'
+        llm_output:
+          content: null
+          function_call:
+            name: get_current_weather
+            arguments: |-
+              {
+                "location": "Boston"
+              }
+          role: assistant
+    is_chat_input: false
+    is_chat_history: true
+  question:
+    type: string
+    default: How about London next week?
+    is_chat_input: true
+outputs:
+  answer:
+    type: string
+    reference: ${run_function.output}
+    is_chat_output: true
+  llm_output:
+    type: object
+    reference: ${use_functions_with_chat_models.output}
+nodes:
+- name: run_function
+  type: python
+  source:
+    type: code
+    path: run_function.py
+  inputs:
+    response_message: ${use_functions_with_chat_models.output}
+  use_variants: false
+- name: use_functions_with_chat_models
+  type: llm
+  source:
+    type: code
+    path: use_functions_with_chat_models.jinja2
+  inputs:
+    deployment_name: gpt-4o-mini
+    temperature: 0.1
+    top_p: 1
+    functions:
+    - name: find_a_doctor
+      description: Get the best doctor based on speciality
+      parameters:
+        type: object
+        properties:
+          query:
+            type: string
+            description: query that could have condition, speciality or provider, e.g.
+              Internal Medicine/Pediatrics, Skin Doctor, Etheart, Rosemary
+          category:
+            type: string
+            description: category of doctor search; It could be one of the following values-
+              'Condition','Speciality' or 'Provider'
+          sort:
+            type: string
+            description: "If the user wants to sort the results based on Closest, Best Match
+              or by Name/NameDesc, It is one of the following values :
+              'Closest','BestMatch', 'Name','NameDesc'"
+          zip:
+            type: string
+            description: The zip code where doctor practices, e.g. 30097
+        required:
+        - speciality
+        - zip
+    function_call: auto
+    chat_history: ${inputs.chat_history}
+    question: ${inputs.question}
+  provider: AzureOpenAI
+  connection: ai-furtherai327136331691_aoai
+  api: chat
+  module: promptflow.tools.aoai
+  use_variants: false
+node_variants: {}
+environment:
+  python_requirements_txt: requirements.txt

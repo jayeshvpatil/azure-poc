@@ -1,0 +1,36 @@
+{
+  "orientation": "Vertical",
+  "nodeLayouts": {
+    "inputs": {
+      "x": 12,
+      "y": 62,
+      "index": -1
+    },
+    "outputs": {
+      "x": 12,
+      "y": 392,
+      "index": -1
+    },
+    "run_function": {
+      "x": 67.5,
+      "y": 282,
+      "height": 75,
+      "index": 0
+    },
+    "use_functions_with_chat_models": {
+      "x": 12,
+      "y": 172,
+      "index": 1
+    }
+  },
+  "viewport": {
+    "transformMatrix": [
+      1,
+      0,
+      0,
+      1,
+      144.234375,
+      180
+    ]
+  }
+}
